@@ -1,33 +1,14 @@
----------------------------------------------------------------------------
--- SQL Alternatives
----------------------------------------------------------------------------
+-- SQL Alternatives. Simple query used to compare with Query by Example (QBE) visual programming tool.
+SELECT satellite.norad_id, satellite.launch_id, launch.launch_date
+FROM satellite JOIN launch ON satellite.launch_id = launch.launch_id
+WHERE trunc(launch.launch_date) = DATE '1957-10-04'
+ORDER BY satellite.norad_id;
 
---Simple query used to compare with Query by Example (QBE) visual programming tool:
-select
-	satellite.norad_id,
-	satellite.launch_id,
-	launch.launch_date
-from satellite
-join launch
-	on satellite.launch_id = launch.launch_id
-where trunc(launch.launch_date) = date '1957-10-04'
-order by satellite.norad_id;
+-- Key concepts. Oracle 21c has 2557 reserved words, whereas most programming languages only have a few dozen.
+SELECT COUNT(*) FROM v$reserved_words;
+SELECT * FROM v$reserved_words;
 
-
-
----------------------------------------------------------------------------
--- Key Concepts
----------------------------------------------------------------------------
-
---Oracle 21c has 2557 reserved words, whereas most programming languages only have a few dozen.
-select count(*) from v$reserved_words;
-select * from v$reserved_words;
-
-
-
----------------------------------------------------------------------------
--- NULL
----------------------------------------------------------------------------
+-- NULL.
 
 --Initial SQL*Plus formatting to perfectly recreate results in book.
 --(But I hope that you're using an IDE instead of SQL*Plus.)
