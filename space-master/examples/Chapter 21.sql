@@ -1,74 +1,76 @@
----------------------------------------------------------------------------
--- Create a PL/SQL Playground
----------------------------------------------------------------------------
-
+-- Create a PL/SQL Playground.
 --PL/SQL block with nested procedure and function.
-declare
-	v_declare_variables_first number;
+DECLARE
+    v_declare_variables_first NUMBER;
 
-	function some_function return number is
-		procedure some_procedure is
-		begin
-			null;
-		end some_procedure;
-	begin
-		some_procedure;
-		return 1;
-	end some_function;
-begin
-	v_declare_variables_first := some_function;
-	dbms_output.put_line('Output: '||v_declare_variables_first);
-end;
+    FUNCTION some_function RETURN NUMBER IS
+        PROCEDURE some_procedure IS
+        BEGIN
+            NULL;
+        END some_procedure;
+
+    BEGIN
+        some_procedure;
+        RETURN 1;
+    END some_function;
+
+BEGIN
+    v_declare_variables_first := some_function;
+    dbms_output.put_line('Output: ' || v_declare_variables_first);
+END;
 /
 
+-- Session data.
+-- Create a package with global public and private variables.
+CREATE OR REPLACE PACKAGE test_package IS
+    g_public_global NUMBER;
+    PROCEDURE set_private (
+        a NUMBER
+    );
 
----------------------------------------------------------------------------
--- Session data
----------------------------------------------------------------------------
+    FUNCTION get_private RETURN NUMBER;
 
---Create a package with global public and private variables.
-create or replace package test_package is
-	g_public_global number;
-	procedure set_private(a number);
-	function get_private return number;
-end;
+END;
 /
 
 --Create a package body that sets and gets private variables.
-create or replace package body test_package is
-	g_private_global number;
+CREATE OR REPLACE PACKAGE BODY test_package IS
 
-	procedure set_private(a number) is
-	begin
-		g_private_global := a;
-	end;
+    g_private_global NUMBER;
 
-	function get_private return number is
-	begin
-		return g_private_global;
-	end;
-end;
+    PROCEDURE set_private (
+        a NUMBER
+    ) IS
+    BEGIN
+        g_private_global := a;
+    END;
+
+    FUNCTION get_private RETURN NUMBER IS
+    BEGIN
+        RETURN g_private_global;
+    END;
+
+END;
 /
 
---Public variables can be get or set directly in PL/SQL.
-begin
-	test_package.g_public_global := 1;
-end;
+-- Public variables can be get or set directly in PL/SQL.
+BEGIN
+    test_package.g_public_global := 1;
+END;
 /
 
---Private variables cannot be set directly. This code raises:
---"PLS-00302: component 'G_PRIVATE_GLOBAL' must be declared"
-begin
-	test_package.g_private_global := 1;
-end;
+-- Private variables cannot be set directly. This code raises:
+-- PLS-00302: component 'G_PRIVATE_GLOBAL' must be declared
+BEGIN
+    test_package.g_private_global := 1;
+END;
 /
 
---Public variables still cannot be read directly in SQL.
---This code raises "ORA-06553: PLS-221: 'G_PUBLIC_GLOBAL' is
--- not a procedure or is undefined"
-select test_package.g_public_global from dual;
+-- Public variables still cannot be read directly in SQL.
+-- ORA-06553: PLS-221: 'G_PUBLIC_GLOBAL' is not a procedure or is undefined
+SELECT test_package.g_public_global FROM dual;
 
---Setters and getters with private variables are preferred.
+-- Setters and getters with private variables are preferred.
 begin
 	test_package.set_private(1);
 end;

@@ -16,8 +16,8 @@ set sqlprompt "SQL> ";
 alter session set current_schema = space;
 
 --Incorrect null comparisons:
-select count(*) from launch where apogee = null;
-select count(*) from launch where apogee <> null;
+SELECT count(*) FROM launch WHERE apogee = null;
+SELECT count(*) FROM launch WHERE apogee <> null;
 
 --Correct null comparisons:
 select count(*) from launch where apogee is null;
@@ -32,25 +32,21 @@ where launch.launch_id not in
 	from satellite
 );
 
+-- JOIN.
+-- Inner join with "inner join" keyword.
 
-
----------------------------------------------------------------------------
--- JOIN
----------------------------------------------------------------------------
-
---Inner join with "inner join" keyword:
 select *
 from launch
 inner join satellite
 	on launch.launch_id = satellite.launch_id;
 
---Inner join with "join" keyword:
+--Inner join with "join" keyword.
 select *
 from launch
 join satellite
 	on launch.launch_id = satellite.launch_id;
 
---Inner join with Cartesian product method:
+--Inner join with Cartesian product method.
 select *
 from launch, satellite
 where launch.launch_id = satellite.launch_id;

@@ -1,41 +1,28 @@
----------------------------------------------------------------------------
--- PL/Scope
----------------------------------------------------------------------------
+-- PL/Scope.
+-- Generate identifier information.
+ALTER SESSION SET plscope_settings = 'identifiers:all';
 
---Generate identifier information.
-alter session set plscope_settings='identifiers:all';
+CREATE OR REPLACE PROCEDURE temp_procedure IS
+    v_count NUMBER;
+BEGIN
+    SELECT
+        COUNT(*)
+    INTO v_count
+    FROM
+        launch;
 
-create or replace procedure temp_procedure is
-   v_count number;
-begin
-   select count(*)
-   into v_count
-   from launch;
-end;
+END;
 /
 
+-- Identifiers in the procedure.
+SELECT lpad(' ',(level - 1) * 3, ' ') || name name, type, usage, line, col
+FROM (SELECT * FROM user_identifiers WHERE object_name = 'TEMP_PROCEDURE') identifiers
+START WITH usage_context_id = 0
+CONNECT BY PRIOR usage_id = usage_context_id
+ORDER SIBLINGS BY line, col;
 
---Identifiers in the procedure.
-select
-	lpad(' ', (level-1)*3, ' ') || name name,
-	type, usage, line, col
-from
-(
-	select *
-	from user_identifiers
-	where object_name = 'TEMP_PROCEDURE'
-) identifiers
-start with usage_context_id = 0
-connect by prior usage_id = usage_context_id
-order siblings by line, col;
-
-
-
----------------------------------------------------------------------------
--- PLSQL_LEXER
----------------------------------------------------------------------------
-
---Tokenize a simple SQL statement.
+-- PLSQL_LEXER.
+-- Tokenize a simple SQL statement.
 select type, to_char(value) value, line_number, column_number
 from plsql_lexer.lex('select*from dual');
 
